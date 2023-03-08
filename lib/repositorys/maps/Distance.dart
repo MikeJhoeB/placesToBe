@@ -14,7 +14,7 @@ class DistanceRepository {
     final response = await _dio.request(_baseUrl, queryParameters: {
       'origins': '${origem.latitude}, ${origem.longitude}',
       'destinations': '${destino.latitude}, ${destino.longitude}',
-      'key': 'AIzaSyAu2FLcakwDIBBMdeBW42daS6rHLYyzvk8',
+      'key': 'AIzaSyC1Ype7NJXm3PKyUKOzQvNMSSik_sSBHvQ',
     });
 
     print(response);

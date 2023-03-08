@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:places_to_be/repositorys/maps/Places.dart';
 
 import '../models/maps/Distance.dart';
+import '../models/maps/Places.dart';
 import '../repositorys/maps/Distance.dart';
 
 class PaginaPrincipal extends StatefulWidget {
@@ -15,13 +17,14 @@ class PaginaPrincipal extends StatefulWidget {
 }
 
 class PaginaPrincipalState extends State<PaginaPrincipal> {
-
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   MapType _currentMapType = MapType.normal;
 
-  late Distance _info;
+  late Distance _infoDistance;
+  late List<Places> _infoPlaces;
 
   static const CameraPosition _inicio = CameraPosition(
     target: LatLng(-25.36479403367088, -49.18579922601835),
@@ -34,40 +37,13 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
       tilt: 30.440717697143555,
       zoom: 19.151926040649414);
 
-  final List<Marker> _markers = <Marker>[
-    const Marker(
-      markerId: MarkerId("1"),
-      position: LatLng(-25.348509786564463, -49.201286212920394),
-      infoWindow: InfoWindow(
-        title: 'Casa 1',
-      ),
-      visible: true,
-    ),
-    const Marker(
-      markerId: MarkerId("2"),
-      position: LatLng(-25.34625845594988, -49.20390814776643),
-      infoWindow: InfoWindow(
-        title: 'Casa 2',
-      ),
-      visible: true,
-    ),
-    const Marker(
-      markerId: MarkerId("3"),
-      position: LatLng(-25.348825633172105, -49.20628447582706),
-      infoWindow: InfoWindow(
-        title: 'Casa 3',
-      ),
-      visible: true,
-    )
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: GoogleMap(
         mapType: _currentMapType,
         initialCameraPosition: _inicio,
-        markers: Set<Marker>.of(_markers),
+        markers: Set<Marker>.of(markers.values),
         myLocationEnabled: true,
         myLocationButtonEnabled: true,
         onMapCreated: (GoogleMapController controller) {
@@ -87,11 +63,10 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
                   heroTag: 'btn1',
                   onPressed: () async {
                     _getUserCurrentLocation().then((value) async {
-                      _getDistance(LatLng(value.latitude, value.longitude),
-                              _markers[2].position)
-                          .then((value) {
-                        if (_info.totalDistance > 300) {
-                          _makeMarkerNotVisible(2);
+                      _getPlaces(LatLng(value.latitude, value.longitude), 10000,
+                          'restaurant', '').then((value) {
+                        for(Places place in _infoPlaces){
+                          _addMarker(place.placeId, place.localizacao);
                         }
                       });
                     });
@@ -138,10 +113,19 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
   }
 
   Future<Distance?> _getDistance(origem, destino) async {
-    final directions = await DistanceRepository()
+    final distance = await DistanceRepository()
         .getDirections(origem: origem, destino: destino);
     setState(() {
-      _info = directions!;
+      _infoDistance = distance!;
+    });
+    return null;
+  }
+
+  Future<Places?> _getPlaces(origem, radius, type, keyword) async {
+    final places = await PlacesRepository().getPlaces(
+        origem: origem, radius: radius, type: type, keyword: keyword);
+    setState(() {
+      _infoPlaces = places!;
     });
     return null;
   }
@@ -155,12 +139,16 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
     return await Geolocator.getCurrentPosition();
   }
 
-  void _makeMarkerNotVisible(int markerId) {
-    final Marker marker = _markers[markerId];
+  void _addMarker(String placeId, LatLng location) {
+    final MarkerId markerId = MarkerId(placeId);
+
+    final Marker marker = Marker(
+      markerId: markerId,
+      position: location,
+    );
+
     setState(() {
-      _markers[markerId] = marker.copyWith(
-        visibleParam: false,
-      );
+      markers[markerId] = marker;
     });
   }
 }

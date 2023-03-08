@@ -14,7 +14,7 @@ class DirectionsRepository {
     final response = await _dio.request(_baseUrl, queryParameters: {
       'origin': '${origem.latitude}, ${origem.longitude}',
       'destination': '${destino.latitude}, ${destino.longitude}',
-      'key': 'AIzaSyAu2FLcakwDIBBMdeBW42daS6rHLYyzvk8',
+      'key': 'AIzaSyC1Ype7NJXm3PKyUKOzQvNMSSik_sSBHvQ',
     });
 
     print(response);
