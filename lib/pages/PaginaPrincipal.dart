@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:places_to_be/repositorys/maps/Places.dart';
+import 'package:places_to_be/widgets/SideMenu.dart';
 
 import '../models/maps/Distance.dart';
 import '../models/maps/Places.dart';
@@ -31,21 +32,17 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
     zoom: 14.4746,
   );
 
-  static const CameraPosition _casa = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(-25.34766566118759, -49.202754944489755),
-      tilt: 30.440717697143555,
-      zoom: 19.151926040649414);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const SideMenu(),
       body: GoogleMap(
         mapType: _currentMapType,
         initialCameraPosition: _inicio,
         markers: Set<Marker>.of(markers.values),
         myLocationEnabled: true,
         myLocationButtonEnabled: true,
+        compassEnabled: true,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
@@ -59,45 +56,60 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
-                child: FloatingActionButton(
-                  heroTag: 'btn1',
-                  onPressed: () async {
-                    _getUserCurrentLocation().then((value) async {
-                      _getPlaces(LatLng(value.latitude, value.longitude), 10000,
-                          'restaurant', '').then((value) {
-                        for(Places place in _infoPlaces){
-                          _addMarker(place.placeId, place.localizacao);
-                        }
-                      });
-                    });
-                  },
-                  child: const Icon(Icons.search),
+                child: SizedBox(
+                  height: 30,
+                  child: FittedBox(
+                    child: FloatingActionButton(
+                      heroTag: 'btn1',
+                      onPressed: () async {
+                        _getUserCurrentLocation().then((value) async {
+                          _getPlaces(LatLng(value.latitude, value.longitude), 10000,
+                              'restaurant', '').then((value) {
+                            for(Places place in _infoPlaces){
+                              _addMarker(place.placeId, place.localizacao);
+                            }
+                          });
+                        });
+                      },
+                      child: const Icon(Icons.search),
+                    ),
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
-                child: FloatingActionButton(
-                  heroTag: 'btn2',
-                  onPressed: () => {
-                    setState(() {
-                      _goHome();
-                    })
-                  },
-                  child: const Icon(Icons.home),
+                child: SizedBox(
+                  height: 30,
+                  child: FittedBox(
+                    child: FloatingActionButton(
+                      heroTag: 'btn2',
+                      onPressed: () => {
+                        setState(() {
+                          _clearMarkers();
+                        })
+                      },
+                      child: const Icon(Icons.clear),
+                    ),
+                  ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-                child: FloatingActionButton(
-                  heroTag: 'btn3',
-                  onPressed: () => {
-                    setState(() {
-                      _currentMapType = (_currentMapType == MapType.normal)
-                          ? MapType.satellite
-                          : MapType.normal;
-                    })
-                  },
-                  child: const Icon(Icons.layers),
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: SizedBox(
+                  height: 30,
+                  child: FittedBox(
+                    child: FloatingActionButton(
+                      heroTag: 'btn3',
+                      onPressed: () => {
+                        setState(() {
+                          _currentMapType = (_currentMapType == MapType.normal)
+                              ? MapType.satellite
+                              : MapType.normal;
+                        })
+                      },
+                      child: const Icon(Icons.layers),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -107,9 +119,8 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
     );
   }
 
-  Future<void> _goHome() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_casa));
+  Future<void> _clearMarkers() async {
+    markers.clear();
   }
 
   Future<Distance?> _getDistance(origem, destino) async {

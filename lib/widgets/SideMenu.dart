@@ -5,48 +5,128 @@ import 'package:get/get.dart';
 
 import '../constants/controllers.dart';
 
-class NavigationDrawer extends StatelessWidget {
+class SideMenu extends StatelessWidget {
   final padding = const EdgeInsets.symmetric(horizontal: 20);
 
-  const NavigationDrawer({super.key});
+  const SideMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      width: context.width * 0.50,
+      width: context.width * 0.85,
       child: Material(
-        color: Colors.green,
-        child: ListView(
-          children: <Widget>[
-            const SizedBox(
-              height: 20,
-            ),
-            buildMenuItem(
-              text: 'Meu Perfil',
-              icon: Icons.person,
-              onClicked: () => itemSelecionado(context, 1),
-            ),
-            buildMenuItem(
-              text: 'Meus Pedidos',
-              icon: Icons.shopping_cart,
-              onClicked: () => itemSelecionado(context, 2),
-            ),
-            buildMenuItem(
-              text: 'Minhas Receitas',
-              icon: Icons.book,
-              onClicked: () => itemSelecionado(context, 3),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-              child: Divider(
-                thickness: 2,
-                color: Colors.white70,
+        color: Colors.blueAccent,
+        child: Column(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.85,
+              child: ListView(
+                shrinkWrap: true,
+                children: <Widget>[
+                  buildMenuItem(
+                    text: 'Meu Perfil',
+                    icon: Icons.person,
+                    onClicked: () => itemSelecionado(context, 1),
+                  ),
+                  buildMenuItem(
+                    text: 'Meus Pedidos',
+                    icon: Icons.shopping_cart,
+                    onClicked: () => itemSelecionado(context, 2),
+                  ),
+                  buildMenuItem(
+                    text: 'Minhas Receitas',
+                    icon: Icons.book,
+                    onClicked: () => itemSelecionado(context, 3),
+                  ),buildMenuItem(
+                    text: 'Minhas Receitas',
+                    icon: Icons.book,
+                    onClicked: () => itemSelecionado(context, 3),
+                  ),buildMenuItem(
+                    text: 'Minhas Receitas',
+                    icon: Icons.book,
+                    onClicked: () => itemSelecionado(context, 3),
+                  ),buildMenuItem(
+                    text: 'Minhas Receitas',
+                    icon: Icons.book,
+                    onClicked: () => itemSelecionado(context, 3),
+                  ),buildMenuItem(
+                    text: 'Minhas Receitas',
+                    icon: Icons.book,
+                    onClicked: () => itemSelecionado(context, 3),
+                  ),buildMenuItem(
+                    text: 'Minhas Receitas',
+                    icon: Icons.book,
+                    onClicked: () => itemSelecionado(context, 3),
+                  ),buildMenuItem(
+                    text: 'Minhas Receitas',
+                    icon: Icons.book,
+                    onClicked: () => itemSelecionado(context, 3),
+                  ),buildMenuItem(
+                    text: 'Minhas Receitas',
+                    icon: Icons.book,
+                    onClicked: () => itemSelecionado(context, 3),
+                  ),buildMenuItem(
+                    text: 'Minhas Receitas',
+                    icon: Icons.book,
+                    onClicked: () => itemSelecionado(context, 3),
+                  ),buildMenuItem(
+                    text: 'Minhas Receitas',
+                    icon: Icons.book,
+                    onClicked: () => itemSelecionado(context, 3),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Divider(
+                      thickness: 2,
+                      color: Colors.white70,
+                    ),
+                  ),
+                  buildMenuItem(
+                    text: 'Desconectar',
+                    icon: Icons.logout,
+                    onClicked: () => itemSelecionado(context, 4),
+                  ),
+                ],
               ),
             ),
-            buildMenuItem(
-              text: 'Desconectar',
-              icon: Icons.logout,
-              onClicked: () => itemSelecionado(context, 4),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.15,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: SizedBox(
+                      height: 50,
+                      child: FittedBox(
+                        child: FloatingActionButton(
+                          backgroundColor: Colors.white,
+                          heroTag: 'btn4',
+                          onPressed: () => {
+
+                          },
+                          child: const Icon(Icons.search, color: Colors.blueAccent,),
+                        ),
+                      ),
+                    ),
+                  ),Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: SizedBox(
+                      height: 50,
+                      child: FittedBox(
+                        child: FloatingActionButton(
+                          backgroundColor: Colors.white,
+                          heroTag: 'btn4',
+                          onPressed: () => {
+
+                          },
+                          child: const Icon(Icons.search, color: Colors.blueAccent,),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -76,8 +156,8 @@ class NavigationDrawer extends StatelessWidget {
     );
   }
 
-  itemSelecionado(BuildContext context, int index){
-    switch(index){
+  itemSelecionado(BuildContext context, int index) {
+    switch (index) {
       case 4:
         usuarioController.logout();
         break;
