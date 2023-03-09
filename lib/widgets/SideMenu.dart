@@ -1,9 +1,14 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import "dart:math";
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:places_to_be/classes/MapsFunctions.dart';
+import 'package:places_to_be/pages/PaginaPrincipal.dart';
 
 import '../constants/controllers.dart';
+import '../models/maps/Places.dart';
 
 class SideMenu extends StatelessWidget {
   final padding = const EdgeInsets.symmetric(horizontal: 20);
@@ -24,62 +29,23 @@ class SideMenu extends StatelessWidget {
                 shrinkWrap: true,
                 children: <Widget>[
                   buildMenuItem(
-                    text: 'Meu Perfil',
-                    icon: Icons.person,
+                    text: 'Distância',
+                    icon: Icons.directions_car_filled,
                     onClicked: () => itemSelecionado(context, 1),
                   ),
                   buildMenuItem(
-                    text: 'Meus Pedidos',
-                    icon: Icons.shopping_cart,
+                    text: 'Tipo',
+                    icon: Icons.question_mark,
                     onClicked: () => itemSelecionado(context, 2),
                   ),
                   buildMenuItem(
-                    text: 'Minhas Receitas',
-                    icon: Icons.book,
+                    text: 'Valor',
+                    icon: Icons.attach_money_outlined,
                     onClicked: () => itemSelecionado(context, 3),
                   ),buildMenuItem(
-                    text: 'Minhas Receitas',
-                    icon: Icons.book,
+                    text: 'Filtros Avançados',
+                    icon: Icons.more_vert,
                     onClicked: () => itemSelecionado(context, 3),
-                  ),buildMenuItem(
-                    text: 'Minhas Receitas',
-                    icon: Icons.book,
-                    onClicked: () => itemSelecionado(context, 3),
-                  ),buildMenuItem(
-                    text: 'Minhas Receitas',
-                    icon: Icons.book,
-                    onClicked: () => itemSelecionado(context, 3),
-                  ),buildMenuItem(
-                    text: 'Minhas Receitas',
-                    icon: Icons.book,
-                    onClicked: () => itemSelecionado(context, 3),
-                  ),buildMenuItem(
-                    text: 'Minhas Receitas',
-                    icon: Icons.book,
-                    onClicked: () => itemSelecionado(context, 3),
-                  ),buildMenuItem(
-                    text: 'Minhas Receitas',
-                    icon: Icons.book,
-                    onClicked: () => itemSelecionado(context, 3),
-                  ),buildMenuItem(
-                    text: 'Minhas Receitas',
-                    icon: Icons.book,
-                    onClicked: () => itemSelecionado(context, 3),
-                  ),buildMenuItem(
-                    text: 'Minhas Receitas',
-                    icon: Icons.book,
-                    onClicked: () => itemSelecionado(context, 3),
-                  ),buildMenuItem(
-                    text: 'Minhas Receitas',
-                    icon: Icons.book,
-                    onClicked: () => itemSelecionado(context, 3),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Divider(
-                      thickness: 2,
-                      color: Colors.white70,
-                    ),
                   ),
                   buildMenuItem(
                     text: 'Desconectar',
@@ -101,11 +67,10 @@ class SideMenu extends StatelessWidget {
                       child: FittedBox(
                         child: FloatingActionButton(
                           backgroundColor: Colors.white,
-                          heroTag: 'btn4',
                           onPressed: () => {
 
                           },
-                          child: const Icon(Icons.search, color: Colors.blueAccent,),
+                          child: const Icon(Icons.clear, color: Colors.blueAccent,),
                         ),
                       ),
                     ),
@@ -116,11 +81,13 @@ class SideMenu extends StatelessWidget {
                       child: FittedBox(
                         child: FloatingActionButton(
                           backgroundColor: Colors.white,
-                          heroTag: 'btn4',
-                          onPressed: () => {
-
+                          onPressed: () async {
+                            locateRandomPlace()?.then((value) {
+                              PaginaPrincipal.goPlace(value);
+                              Navigator.pop(context);
+                            });
                           },
-                          child: const Icon(Icons.search, color: Colors.blueAccent,),
+                          child: const Icon(Icons.question_mark, color: Colors.blueAccent,),
                         ),
                       ),
                     ),
@@ -134,25 +101,49 @@ class SideMenu extends StatelessWidget {
     );
   }
 
+  Future<Places>? locateRandomPlace() {
+    return MapsFunctions.getUserCurrentLocation().then((value) async {
+      return MapsFunctions.getPlaces(LatLng(value.latitude, value.longitude), 500,
+          'restaurant', '').then((value) {
+
+        final random = Random();
+        return value![random.nextInt(value.length)];
+      });
+    });
+  }
+
   Widget buildMenuItem({
     required String text,
     required IconData icon,
     VoidCallback? onClicked,
   }) {
     const color = Colors.white;
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: color,
-      ),
-      hoverColor: Colors.white70,
-      title: Text(
-        text,
-        style: const TextStyle(
-          color: color,
+    return Column(
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          child: Divider(
+            thickness: 2,
+            color: Colors.white70,
+          ),
         ),
-      ),
-      onTap: onClicked,
+        ListTile(
+          leading: Icon(
+            icon,
+            color: color,
+          ),
+          hoverColor: Colors.white70,
+          title: Center(
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: color,
+              ),
+            ),
+          ),
+          onTap: onClicked,
+        ),
+      ],
     );
   }
 
