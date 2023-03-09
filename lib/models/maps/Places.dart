@@ -3,10 +3,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class Places {
   final LatLng localizacao;
   final String placeId;
+  final String name;
 
   const Places({
     required this.localizacao,
     required this.placeId,
+    required this.name,
   });
 
   factory Places.fromMap(Map<String, dynamic> map) {
@@ -14,10 +16,12 @@ class Places {
 
     LatLng localizacao = LatLng(location['lat'], location['lng']);
     String placeId = map['place_id'];
+    String name = map['name'];
 
     return Places(
       localizacao: localizacao,
       placeId: placeId,
+      name: name,
     );
   }
 }

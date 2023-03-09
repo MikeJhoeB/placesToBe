@@ -15,7 +15,7 @@ class PaginaPrincipal extends StatefulWidget {
   static final Completer<GoogleMapController> _controller =
   Completer<GoogleMapController>();
 
-  static Future<void> goPlace(Places place) async {
+  static Future goPlace(Places place) async {
     CameraPosition cameraPlace = CameraPosition(
         bearing: 192.8334901395799,
         target: place.localizacao,
@@ -23,7 +23,7 @@ class PaginaPrincipal extends StatefulWidget {
         zoom: 19.151926040649414);
 
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(cameraPlace));
+    controller.moveCamera(CameraUpdate.newCameraPosition(cameraPlace));
   }
 }
 
