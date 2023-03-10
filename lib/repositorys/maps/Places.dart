@@ -16,14 +16,15 @@ class PlacesRepository {
     int? minprice,
     int? maxprice,
   }) async {
+    print('${origem.latitude}, ${origem.longitude}');
     final response = await _dio.request(_baseUrl, queryParameters: {
       'location': '${origem.latitude}, ${origem.longitude}',
       'radius': '$radius',
       'type': type,
-      'keyword': keyword,
-      'maxprice': maxprice,
       'minprice': minprice,
+      'maxprice': maxprice,
       'opennow': true,
+      'keyword': keyword,
       'key': 'AIzaSyC1Ype7NJXm3PKyUKOzQvNMSSik_sSBHvQ',
     });
 

@@ -23,7 +23,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
   MapType _currentMapType = MapType.normal;
 
   static const CameraPosition _inicio = CameraPosition(
-    target: LatLng(-25.36479403367088, -49.18579922601835),
+    target: LatLng(-23.555948520970766, -46.63746619046732),
     zoom: 14.4746,
   );
 
@@ -31,7 +31,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
   static const double maxValor = 4;
 
   static const double minDistance = 0;
-  static const double maxDistance = 10;
+  static const double maxDistance = 50;
 
   double currentMinValuePreco = 0;
   double currentMaxValuePreco = 4;
@@ -40,7 +40,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
   late final Places placeSorted;
 
   int indexTypeSelected = 0;
-  final List<bool> selectedType = <bool>[true, false, false];
+  List<bool> selectedType = <bool>[true, false, false];
 
   final List<String> placeTypes = <String>["bar", "restaurant", "cafe"];
 
@@ -167,7 +167,8 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
                   min: minDistance,
                   max: maxDistance,
                   value: currentValueDistance,
-                  divisions: maxDistance.toInt(),
+                  divisions: (maxDistance / 5).round().toInt(),
+                  label: currentValueDistance.round().toString(),
                   inactiveColor: Colors.white,
                   activeColor: Colors.green,
                   autofocus: true,
@@ -278,7 +279,9 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
               child: FittedBox(
                 child: FloatingActionButton(
                   backgroundColor: Colors.white,
-                  onPressed: () => {},
+                  onPressed: () => {
+                    limpaFiltros()
+                  },
                   child: const Icon(
                     Icons.clear,
                     color: Colors.blueAccent,
@@ -296,7 +299,9 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
                   backgroundColor: Colors.white,
                   onPressed: () async {
                     locateRandomPlace()?.then((value) {
-                      goPlace(value);
+                      if(value != null){
+                        goPlace(value);
+                      }
                       Navigator.pop(context);
                     });
                   },
@@ -313,7 +318,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
     );
   }
 
-  Future<Places>? locateRandomPlace() {
+  Future<Places?>? locateRandomPlace() {
     return MapsFunctions.getUserCurrentLocation().then((value) async {
       return MapsFunctions.getPlaces(
         origem: LatLng(value.latitude, value.longitude),
@@ -323,8 +328,12 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
         minprice: currentMinValuePreco.round().toInt(),
         maxprice: currentMaxValuePreco.round().toInt(),
       ).then((value) {
-        final random = Random();
-        return value![random.nextInt(value.length)];
+        if(value != null) {
+          print(value);
+          final random = Random();
+          return value[random.nextInt(value.length)];
+        }
+        return null;
       });
     });
   }
@@ -338,7 +347,17 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
         zoom: 19.151926040649414);
 
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(cameraPlace));
+    controller.moveCamera(CameraUpdate.newCameraPosition(cameraPlace));
+  }
+
+  void limpaFiltros() {
+    setState(() {
+      currentValueDistance = 0;
+      indexTypeSelected = 0;
+      selectedType = <bool>[true, false, false];
+      currentMinValuePreco = 0;
+      currentMaxValuePreco = 4;
+    });
   }
 
   Widget buildMenuItem({
