@@ -39,7 +39,10 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
 
   late final Places placeSorted;
 
-  final List<bool> selectedType = <bool>[false, false, true];
+  int indexTypeSelected = 0;
+  final List<bool> selectedType = <bool>[true, false, false];
+
+  final List<String> placeTypes = <String>["bar", "restaurant", "cafe"];
 
   @override
   Widget build(BuildContext context) {
@@ -198,6 +201,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
               direction: Axis.horizontal,
               onPressed: (int index) {
                 setState(() {
+                  indexTypeSelected = index;
                   for (int i = 0; i < selectedType.length; i++) {
                     selectedType[i] = i == index;
                   }
@@ -314,7 +318,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
       return MapsFunctions.getPlaces(
         origem: LatLng(value.latitude, value.longitude),
         radius: currentValueDistance.round().toInt() * 1000,
-        type: 'restaurant',
+        type: placeTypes[indexTypeSelected],
         keyword: null,
         minprice: currentMinValuePreco.round().toInt(),
         maxprice: currentMaxValuePreco.round().toInt(),
@@ -326,6 +330,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
   }
 
   Future<void> goPlace(Places place) async {
+    print(place.name);
     CameraPosition cameraPlace = CameraPosition(
         bearing: 192.8334901395799,
         target: place.localizacao,
