@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../constants/firebase.dart';
-import '../pages/PaginaPrincipal.dart';
+import '../pages/PaginaPrincipal/PaginaPrincipal.dart';
 import '../models/Pessoa.dart';
 import '../pages/PaginaLogin.dart';
 

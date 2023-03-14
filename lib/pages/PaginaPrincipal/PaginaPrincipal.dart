@@ -2,11 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:places_to_be/pages/PaginaPrincipal/Widgets/MenuItem.dart';
 
-import '../classes/Categorys.dart';
-import '../classes/MapsFunctions.dart';
-import '../constants/controllers.dart';
-import '../models/maps/Places.dart';
+import '../../classes/Categorys.dart';
+import '../../classes/MapsFunctions.dart';
+import '../../constants/controllers.dart';
+import '../../models/maps/Places.dart';
+import 'Widgets/Details.dart';
+import 'Widgets/LoadingUserLocation.dart';
 
 class PaginaPrincipal extends StatefulWidget {
   const PaginaPrincipal({Key? key}) : super(key: key);
@@ -85,7 +88,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
 
   Widget buildWidgetPrincipal(BuildContext context) {
     return latUser == 0.0 || lngUser == 0.0
-        ? buildLoadingUserLocation()
+        ? const LoadingUserLocation()
         : buildApp();
   }
 
@@ -100,76 +103,12 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
           floatingActionButton: buildButtonChangeMapStyle(),
         ),
       ),
-      AnimatedPositioned(
-        left: 0,
-        right: 0,
-        bottom: detailPosition,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 50),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(40),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 10,
-                  offset: Offset.zero,
-                )
-              ]),
-          child: Column(
-            children: [
-              FittedBox(
-                child: Container(
-                  color: Colors.white,
-                  child: Row(
-                    children: [
-                      Icon(
-                        _categories[indexTypeSelected].icon,
-                        color: Colors.blueAccent,
-                      ),
-                      const SizedBox(width: 20),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            placeName,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              decoration: TextDecoration.none,
-                            ),
-                          ),
-                          Text(
-                            placePrice.toString(),
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              decoration: TextDecoration.none,
-                            ),
-                          ),
-                          const Text(
-                            'Localização',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              decoration: TextDecoration.none,
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
+      Details(
+        detailPosition: detailPosition,
+        categories: _categories,
+        indexTypeSelected: indexTypeSelected,
+        placeName: placeName,
+        placePrice: placePrice,
       )
     ]);
   }
@@ -182,9 +121,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
       myLocationEnabled: true,
       myLocationButtonEnabled: true,
       zoomControlsEnabled: false,
-      compassEnabled: true,
-
-      onTap: (LatLng loc){
+      onTap: (LatLng loc) {
         setState(() {
           detailPosition = -220;
         });
@@ -222,22 +159,6 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
             },
             icon: const Icon(Icons.logout)),
       ],
-    );
-  }
-
-  Scaffold buildLoadingUserLocation() {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            SizedBox(
-              height: 10,
-            ),
-            CircularProgressIndicator()
-          ],
-        ),
-      ),
     );
   }
 
@@ -304,7 +225,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
   Column buildFiltroDistancia(BuildContext context) {
     return Column(
       children: [
-        buildMenuItem(
+        MenuItem(
           text: 'Distance',
           icon: Icons.directions_car_filled,
         ),
@@ -343,7 +264,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
   Column buildFiltroTipo(BuildContext context) {
     return Column(
       children: [
-        buildMenuItem(
+        MenuItem(
           text: 'Type',
           icon: Icons.question_mark,
         ),
@@ -381,7 +302,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
   Column buildFiltroValor() {
     return Column(
       children: [
-        buildMenuItem(
+        MenuItem(
           text: 'Price',
           icon: Icons.attach_money_outlined,
         ),
@@ -511,16 +432,15 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
     final MarkerId markerId = MarkerId(place.id);
 
     final Marker marker = Marker(
-      markerId: markerId,
-      position: place.location,
-      onTap: (){
-        setState(() {
-          detailPosition = 20;
-          placeName = place.name;
-          placePrice = place.price;
+        markerId: markerId,
+        position: place.location,
+        onTap: () {
+          setState(() {
+            detailPosition = 20;
+            placeName = place.name;
+            placePrice = place.price;
+          });
         });
-      }
-    );
 
     setState(() {
       _markers[markerId] = marker;
@@ -535,39 +455,6 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
       currentMinValuePreco = 0;
       currentMaxValuePreco = 4;
     });
-  }
-
-  Widget buildMenuItem({
-    required String text,
-    required IconData icon,
-  }) {
-    const color = Colors.white;
-    return Column(
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0),
-          child: Divider(
-            thickness: 2,
-            color: Colors.white70,
-          ),
-        ),
-        ListTile(
-          leading: Icon(
-            icon,
-            color: color,
-          ),
-          hoverColor: Colors.white70,
-          title: Center(
-            child: Text(
-              text,
-              style: const TextStyle(
-                color: color,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
   }
 }
 
