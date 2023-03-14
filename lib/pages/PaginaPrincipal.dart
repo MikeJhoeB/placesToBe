@@ -15,12 +15,32 @@ class PaginaPrincipal extends StatefulWidget {
 }
 
 class PaginaPrincipalState extends State<PaginaPrincipal> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
   MapType _currentMapType = MapType.normal;
+
   double latUser = 0.0, lngUser = 0.0;
   late CameraPosition inicio;
+
+  static const double minValor = 0;
+  static const double maxValor = 4;
+
+  static const double minDistance = 0;
+  static const double maxDistance = 50;
+
+  double currentMinValuePreco = 0;
+  double currentMaxValuePreco = 4;
+  double currentValueDistance = 1;
+
+  late final Places placeSorted;
+
+  int indexTypeSelected = 0;
+  List<bool> selectedType = <bool>[true, false, false];
+
+  final List<String> placeTypes = <String>["bar", "restaurant", "cafe"];
 
   @override
   initState() {
@@ -41,23 +61,6 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
     });
   }
 
-  static const double minValor = 0;
-  static const double maxValor = 4;
-
-  static const double minDistance = 0;
-  static const double maxDistance = 50;
-
-  double currentMinValuePreco = 0;
-  double currentMaxValuePreco = 4;
-  double currentValueDistance = 1;
-
-  late final Places placeSorted;
-
-  int indexTypeSelected = 0;
-  List<bool> selectedType = <bool>[true, false, false];
-
-  final List<String> placeTypes = <String>["bar", "restaurant", "cafe"];
-
   @override
   Widget build(BuildContext context) {
     return buildTela(context);
@@ -69,19 +72,21 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
 
   Widget buildWidgetPrincipal(BuildContext context) {
     return latUser == 0.0 || lngUser == 0.0
-    ? buildLoadingUserLocation()
-    : buildFunctions(context);
+        ? buildLoadingUserLocation()
+        : buildGoogleMap();
   }
 
-  Scaffold buildFunctions(BuildContext context) {
+  Scaffold buildGoogleMap() {
     return Scaffold(
-        drawer: buildSideMenu(context),
-        body: buildGoogleMap(),
-        floatingActionButton: buildBotoesPaginaPrincipal(),
-      );
+      key: _scaffoldKey,
+      drawer: buildSideMenu(context),
+      appBar: buildAppBar(),
+      body: buildBody(),
+      floatingActionButton: buildButtonChangeMapStyle(),
+    );
   }
 
-  GoogleMap buildGoogleMap() {
+  GoogleMap buildBody() {
     return GoogleMap(
       mapType: _currentMapType,
       initialCameraPosition: inicio,
@@ -92,6 +97,35 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
       onMapCreated: (GoogleMapController controller) {
         _controller.complete(controller);
       },
+    );
+  }
+
+  AppBar buildAppBar() {
+    return AppBar(
+      leading: IconButton(
+          onPressed: () {
+            setState(() {
+              _scaffoldKey.currentState?.openDrawer();
+            });
+          },
+          icon: const Icon(Icons.search)),
+      title: const Text(
+        "Places to Be",
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      centerTitle: true,
+      iconTheme: const IconThemeData(color: Colors.white),
+      backgroundColor: Colors.blueAccent,
+      elevation: 0,
+      actions: [
+        IconButton(
+            onPressed: () {
+              setState(() {
+                usuarioController.logout();
+              });
+            },
+            icon: const Icon(Icons.logout)),
+      ],
     );
   }
 
@@ -111,7 +145,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
     );
   }
 
-  Builder buildBotoesPaginaPrincipal() {
+  Builder buildButtonChangeMapStyle() {
     return Builder(builder: (context) {
       return Padding(
         padding: const EdgeInsets.only(left: 24.0),
@@ -120,21 +154,6 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: SizedBox(
-                  height: 40,
-                  child: FittedBox(
-                    child: FloatingActionButton(
-                      heroTag: 'openSideMenu',
-                      onPressed: () {
-                        Scaffold.of(context).openDrawer();
-                      },
-                      child: const Icon(Icons.search),
-                    ),
-                  ),
-                ),
-              ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: SizedBox(
@@ -176,11 +195,6 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
                   buildFiltroDistancia(context),
                   buildFiltroTipo(context),
                   buildFiltroValor(),
-                  buildMenuItem(
-                    text: 'Desconectar',
-                    icon: Icons.logout,
-                    onClicked: () => itemSelecionado(context, 4),
-                  ),
                 ],
               ),
             ),
@@ -197,7 +211,6 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
         buildMenuItem(
           text: 'Distância',
           icon: Icons.directions_car_filled,
-          onClicked: () => itemSelecionado(context, 1),
         ),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -237,7 +250,6 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
         buildMenuItem(
           text: 'Tipo',
           icon: Icons.question_mark,
-          onClicked: () => itemSelecionado(context, 2),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -402,7 +414,6 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
   Widget buildMenuItem({
     required String text,
     required IconData icon,
-    VoidCallback? onClicked,
   }) {
     const color = Colors.white;
     return Column(
@@ -428,18 +439,9 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
               ),
             ),
           ),
-          onTap: onClicked,
         ),
       ],
     );
-  }
-
-  itemSelecionado(BuildContext context, int index) {
-    switch (index) {
-      case 4:
-        usuarioController.logout();
-        break;
-    }
   }
 }
 
