@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -21,11 +19,27 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
       Completer<GoogleMapController>();
 
   MapType _currentMapType = MapType.normal;
+  double latUser = 0.0, lngUser = 0.0;
+  late CameraPosition inicio;
 
-  static const CameraPosition _inicio = CameraPosition(
-    target: LatLng(-23.555948520970766, -46.63746619046732),
-    zoom: 14.4746,
-  );
+  @override
+  initState() {
+    super.initState();
+    createCameraPosition();
+  }
+
+  void createCameraPosition() async {
+    MapsFunctions.getUserCurrentLocation().then((value) {
+      latUser = value.latitude;
+      lngUser = value.longitude;
+      setState(() {
+        inicio = CameraPosition(
+          target: LatLng(latUser, lngUser),
+          zoom: 14.4746,
+        );
+      });
+    });
+  }
 
   static const double minValor = 0;
   static const double maxValor = 4;
@@ -46,17 +60,31 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: buildSideMenu(context),
-      body: buildBody(),
-      floatingActionButton: buildBotoesPaginaPrincipal(),
-    );
+    return buildTela(context);
   }
 
-  GoogleMap buildBody() {
+  Widget buildTela(BuildContext context) {
+    return buildWidgetPrincipal(context);
+  }
+
+  Widget buildWidgetPrincipal(BuildContext context) {
+    return latUser == 0.0 || lngUser == 0.0
+    ? buildLoadingUserLocation()
+    : buildFunctions(context);
+  }
+
+  Scaffold buildFunctions(BuildContext context) {
+    return Scaffold(
+        drawer: buildSideMenu(context),
+        body: buildGoogleMap(),
+        floatingActionButton: buildBotoesPaginaPrincipal(),
+      );
+  }
+
+  GoogleMap buildGoogleMap() {
     return GoogleMap(
       mapType: _currentMapType,
-      initialCameraPosition: _inicio,
+      initialCameraPosition: inicio,
       myLocationEnabled: true,
       myLocationButtonEnabled: true,
       zoomControlsEnabled: false,
@@ -64,6 +92,22 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
       onMapCreated: (GoogleMapController controller) {
         _controller.complete(controller);
       },
+    );
+  }
+
+  Scaffold buildLoadingUserLocation() {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            SizedBox(
+              height: 10,
+            ),
+            CircularProgressIndicator()
+          ],
+        ),
+      ),
     );
   }
 
@@ -279,9 +323,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
               child: FittedBox(
                 child: FloatingActionButton(
                   backgroundColor: Colors.white,
-                  onPressed: () => {
-                    limpaFiltros()
-                  },
+                  onPressed: () => {limpaFiltros()},
                   child: const Icon(
                     Icons.clear,
                     color: Colors.blueAccent,
@@ -299,7 +341,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
                   backgroundColor: Colors.white,
                   onPressed: () async {
                     locateRandomPlace()?.then((value) {
-                      if(value != null){
+                      if (value != null) {
                         goPlace(value);
                       }
                       Navigator.pop(context);
@@ -328,10 +370,8 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
         minprice: currentMinValuePreco.round().toInt(),
         maxprice: currentMaxValuePreco.round().toInt(),
       ).then((value) {
-        if(value != null) {
-          print(value);
-          final random = Random();
-          return value[random.nextInt(value.length)];
+        if (value != null) {
+          return value;
         }
         return null;
       });
@@ -339,15 +379,14 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
   }
 
   Future<void> goPlace(Places place) async {
-    print(place.name);
     CameraPosition cameraPlace = CameraPosition(
         bearing: 192.8334901395799,
         target: place.localizacao,
-        tilt: 30.440717697143555,
-        zoom: 19.151926040649414);
+        tilt: 0,
+        zoom: 19.746);
 
     final GoogleMapController controller = await _controller.future;
-    controller.moveCamera(CameraUpdate.newCameraPosition(cameraPlace));
+    controller.animateCamera(CameraUpdate.newCameraPosition(cameraPlace));
   }
 
   void limpaFiltros() {

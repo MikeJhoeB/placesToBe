@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Places {
@@ -24,6 +26,13 @@ class Places {
       name: name,
     );
   }
+}
+
+Places getRandomPlace(Map<String, dynamic> map) {
+  late List<Places> places = getAllPlaces(map);
+
+  final random = Random();
+  return places[random.nextInt(places.length)];
 }
 
 List<Places> getAllPlaces(Map<String, dynamic> map) {

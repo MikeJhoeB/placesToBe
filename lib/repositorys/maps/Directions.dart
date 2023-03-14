@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../constants/keys.dart';
 import '../../models/maps/Directions.dart';
 
 class DirectionsRepository {
@@ -14,10 +15,8 @@ class DirectionsRepository {
     final response = await _dio.request(_baseUrl, queryParameters: {
       'origin': '${origem.latitude}, ${origem.longitude}',
       'destination': '${destino.latitude}, ${destino.longitude}',
-      'key': 'AIzaSyC1Ype7NJXm3PKyUKOzQvNMSSik_sSBHvQ',
+      'key': Keys.keyGoogleAPI,
     });
-
-    print(response);
 
     if (response.statusCode == 200){
       return Directions.fromMap(response.data);

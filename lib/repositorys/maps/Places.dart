@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../../constants/keys.dart';
 import '../../models/maps/Places.dart';
 
 class PlacesRepository {
@@ -8,7 +9,7 @@ class PlacesRepository {
 
   final Dio _dio = Dio();
 
-  Future<List<Places>?> getPlaces({
+  Future<Places?> getPlaces({
     required LatLng origem,
     required int radius,
     required String type,
@@ -16,7 +17,6 @@ class PlacesRepository {
     int? minprice,
     int? maxprice,
   }) async {
-    print('${origem.latitude}, ${origem.longitude}');
     final response = await _dio.request(_baseUrl, queryParameters: {
       'location': '${origem.latitude}, ${origem.longitude}',
       'radius': '$radius',
@@ -25,13 +25,11 @@ class PlacesRepository {
       'maxprice': maxprice,
       'opennow': true,
       'keyword': keyword,
-      'key': 'AIzaSyC1Ype7NJXm3PKyUKOzQvNMSSik_sSBHvQ',
+      'key': Keys.keyGoogleAPI,
     });
 
-    print(response);
-
     if (response.statusCode == 200) {
-      return getAllPlaces(response.data);
+        return getRandomPlace(response.data);
     }
     return null;
   }

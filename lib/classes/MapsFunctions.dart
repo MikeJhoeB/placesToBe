@@ -11,7 +11,7 @@ class MapsFunctions {
         .getDirections(origem: origem, destino: destino);
   }
 
-  static Future<List<Places>?> getPlaces(
+  static Future<Places?> getPlaces(
       {required LatLng origem,
       required int radius,
       required String type,
