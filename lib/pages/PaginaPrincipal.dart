@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../classes/Categorys.dart';
 import '../classes/MapsFunctions.dart';
 import '../constants/controllers.dart';
 import '../models/maps/Places.dart';
@@ -44,6 +45,16 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
 
   final List<String> placeTypes = <String>["bar", "restaurant", "cafe"];
 
+  double detailPosition = -220;
+  String placeName = "Restaurante";
+  int placePrice = 0;
+
+  final List<Category> _categories = [
+    Category('bar', Icons.local_drink),
+    Category('restaurant', Icons.restaurant),
+    Category('cafe', Icons.coffee),
+  ];
+
   @override
   initState() {
     super.initState();
@@ -75,17 +86,92 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
   Widget buildWidgetPrincipal(BuildContext context) {
     return latUser == 0.0 || lngUser == 0.0
         ? buildLoadingUserLocation()
-        : buildGoogleMap();
+        : buildApp();
   }
 
-  Scaffold buildGoogleMap() {
-    return Scaffold(
-      key: _scaffoldKey,
-      drawer: buildSideMenu(context),
-      appBar: buildAppBar(),
-      body: buildBody(),
-      floatingActionButton: buildButtonChangeMapStyle(),
-    );
+  Stack buildApp() {
+    return Stack(children: [
+      Positioned.fill(
+        child: Scaffold(
+          key: _scaffoldKey,
+          drawer: buildSideMenu(context),
+          appBar: buildAppBar(),
+          body: buildBody(),
+          floatingActionButton: buildButtonChangeMapStyle(),
+        ),
+      ),
+      AnimatedPositioned(
+        left: 0,
+        right: 0,
+        bottom: detailPosition,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 50),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(40),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: Offset.zero,
+                )
+              ]),
+          child: Column(
+            children: [
+              FittedBox(
+                child: Container(
+                  color: Colors.white,
+                  child: Row(
+                    children: [
+                      Icon(
+                        _categories[indexTypeSelected].icon,
+                        color: Colors.blueAccent,
+                      ),
+                      const SizedBox(width: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            placeName,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                          Text(
+                            placePrice.toString(),
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                          const Text(
+                            'Localização',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      )
+    ]);
   }
 
   GoogleMap buildBody() {
@@ -97,6 +183,12 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
       myLocationButtonEnabled: true,
       zoomControlsEnabled: false,
       compassEnabled: true,
+
+      onTap: (LatLng loc){
+        setState(() {
+          detailPosition = -220;
+        });
+      },
       onMapCreated: (GoogleMapController controller) {
         _controller.complete(controller);
       },
@@ -108,6 +200,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
       leading: IconButton(
           onPressed: () {
             setState(() {
+              detailPosition = -220;
               _scaffoldKey.currentState?.openDrawer();
             });
           },
@@ -274,7 +367,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
               color: Colors.white,
               isSelected: selectedType,
               children: const [
-                Icon(Icons.no_drinks),
+                Icon(Icons.local_drink),
                 Icon(Icons.restaurant),
                 Icon(Icons.coffee),
               ],
@@ -404,7 +497,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
   Future<void> goPlace(Places place) async {
     CameraPosition cameraPlace = CameraPosition(
         bearing: 192.8334901395799,
-        target: place.localizacao,
+        target: place.location,
         tilt: 0,
         zoom: 19.746);
 
@@ -415,14 +508,19 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
   }
 
   void setMarkerAndDetails(Places place) {
-    final MarkerId markerId = MarkerId(place.placeId);
+    final MarkerId markerId = MarkerId(place.id);
 
     final Marker marker = Marker(
       markerId: markerId,
-      position: place.localizacao,
+      position: place.location,
+      onTap: (){
+        setState(() {
+          detailPosition = 20;
+          placeName = place.name;
+          placePrice = place.price;
+        });
+      }
     );
-
-
 
     setState(() {
       _markers[markerId] = marker;

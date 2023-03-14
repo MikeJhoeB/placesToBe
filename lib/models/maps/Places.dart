@@ -3,27 +3,35 @@ import 'dart:math';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Places {
-  final LatLng localizacao;
-  final String placeId;
+  final LatLng location;
+  final String id;
   final String name;
+  final int price;
+  final double rating;
 
   const Places({
-    required this.localizacao,
-    required this.placeId,
+    required this.location,
+    required this.id,
     required this.name,
+    required this.price,
+    required this.rating,
   });
 
   factory Places.fromMap(Map<String, dynamic> map) {
-    final location = Map<String, dynamic>.from(map['geometry']['location']);
+    final place = Map<String, dynamic>.from(map['geometry']['location']);
 
-    LatLng localizacao = LatLng(location['lat'], location['lng']);
+    LatLng location = LatLng(place['lat'], place['lng']);
     String placeId = map['place_id'];
     String name = map['name'];
+    int price = map['price_level'];
+    double rating = map['rating'];
 
     return Places(
-      localizacao: localizacao,
-      placeId: placeId,
+      location: location,
+      id: placeId,
       name: name,
+      price: price,
+      rating: rating,
     );
   }
 }
