@@ -22,6 +22,8 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
 
   MapType _currentMapType = MapType.normal;
 
+  final Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
+
   double latUser = 0.0, lngUser = 0.0;
   late CameraPosition inicio;
 
@@ -90,6 +92,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
     return GoogleMap(
       mapType: _currentMapType,
       initialCameraPosition: inicio,
+      markers: Set<Marker>.of(_markers.values),
       myLocationEnabled: true,
       myLocationButtonEnabled: true,
       zoomControlsEnabled: false,
@@ -209,7 +212,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
     return Column(
       children: [
         buildMenuItem(
-          text: 'Distância',
+          text: 'Distance',
           icon: Icons.directions_car_filled,
         ),
         Container(
@@ -248,7 +251,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
     return Column(
       children: [
         buildMenuItem(
-          text: 'Tipo',
+          text: 'Type',
           icon: Icons.question_mark,
         ),
         Row(
@@ -286,7 +289,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
     return Column(
       children: [
         buildMenuItem(
-          text: 'Valor',
+          text: 'Price',
           icon: Icons.attach_money_outlined,
         ),
         Container(
@@ -333,10 +336,14 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
             child: SizedBox(
               height: 50,
               child: FittedBox(
-                child: FloatingActionButton(
+                child: FloatingActionButton.extended(
                   backgroundColor: Colors.white,
                   onPressed: () => {limpaFiltros()},
-                  child: const Icon(
+                  label: const Text(
+                    "Clean",
+                    style: TextStyle(color: Colors.blueAccent),
+                  ),
+                  icon: const Icon(
                     Icons.clear,
                     color: Colors.blueAccent,
                   ),
@@ -349,7 +356,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
             child: SizedBox(
               height: 50,
               child: FittedBox(
-                child: FloatingActionButton(
+                child: FloatingActionButton.extended(
                   backgroundColor: Colors.white,
                   onPressed: () async {
                     locateRandomPlace()?.then((value) {
@@ -359,7 +366,11 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
                       Navigator.pop(context);
                     });
                   },
-                  child: const Icon(
+                  label: const Text(
+                    "Go",
+                    style: TextStyle(color: Colors.blueAccent),
+                  ),
+                  icon: const Icon(
                     Icons.question_mark,
                     color: Colors.blueAccent,
                   ),
@@ -399,6 +410,23 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
 
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(cameraPlace));
+
+    setMarkerAndDetails(place);
+  }
+
+  void setMarkerAndDetails(Places place) {
+    final MarkerId markerId = MarkerId(place.placeId);
+
+    final Marker marker = Marker(
+      markerId: markerId,
+      position: place.localizacao,
+    );
+
+
+
+    setState(() {
+      _markers[markerId] = marker;
+    });
   }
 
   void limpaFiltros() {
