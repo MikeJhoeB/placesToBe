@@ -1,20 +1,20 @@
 // ignore_for_file: file_names
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Pessoa {
+class UserModel {
   final String? id, email;
 
-  Pessoa({
+  UserModel({
     this.id,
     this.email,
   });
 
-  static Pessoa fromSnapshot(DocumentSnapshot snap) {
-    Pessoa pessoa = Pessoa(
+  static UserModel fromSnapshot(DocumentSnapshot snap) {
+    UserModel user = UserModel(
       id: snap['id'],
       email: snap['email'],
     );
 
-    return pessoa;
+    return user;
   }
 }

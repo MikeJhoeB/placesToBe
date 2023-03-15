@@ -1,3 +1,3 @@
-import '../controllers/UsuarioController.dart';
+import '../controllers/UserController.dart';
 
-UsuarioController usuarioController = UsuarioController.instance;
+UserController userController = UserController.instance;

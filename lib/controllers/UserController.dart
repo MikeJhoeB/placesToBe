@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../constants/firebase.dart';
-import '../pages/PaginaPrincipal/PaginaPrincipal.dart';
-import '../models/Pessoa.dart';
-import '../pages/PaginaLogin.dart';
+import '../pages/MainScreen/MainScreen.dart';
+import '../models/UserModel.dart';
+import '../pages/LoginScreen.dart';
 
 class AuthException implements Exception {
   String mensagem;
@@ -12,13 +12,13 @@ class AuthException implements Exception {
   AuthException(this.mensagem);
 }
 
-class UsuarioController extends GetxController {
+class UserController extends GetxController {
   String usersCollection = "users";
   bool firstLogin = false;
 
-  static UsuarioController instance = Get.find();
+  static UserController instance = Get.find();
   late Rx<User?> firebaseUser;
-  Rx<Pessoa> pessoaModel = Pessoa().obs;
+  Rx<UserModel> pessoaModel = UserModel().obs;
   RxBool isLoggedIn = false.obs;
 
   @override
@@ -31,17 +31,17 @@ class UsuarioController extends GetxController {
 
   _setInitialScreenAndData(User? user) async {
     if (user == null) {
-      Get.offAll(() => const PaginaLogin());
+      Get.offAll(() => const LoginScreen());
     } else {
-      Get.offAll(() => const PaginaPrincipal());
+      Get.offAll(() => const MainScreen());
     }
   }
 
-  Stream<Pessoa> listenToUser() => firebaseFirestore
+  Stream<UserModel> listenToUser() => firebaseFirestore
       .collection(usersCollection)
       .doc(firebaseUser.value?.uid)
       .snapshots()
-      .map((snapshot) => Pessoa.fromSnapshot(snapshot));
+      .map((snapshot) => UserModel.fromSnapshot(snapshot));
 
   loginGoogle() async {
     try {

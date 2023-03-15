@@ -1,18 +1,16 @@
-// ignore_for_file: file_names
-
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import '../constants/controllers.dart';
-import '../controllers/UsuarioController.dart';
+import '../controllers/UserController.dart';
 
-class PaginaLogin extends StatefulWidget {
-  const PaginaLogin({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<PaginaLogin> createState() => _PaginaLoginState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _PaginaLoginState extends State<PaginaLogin> {
+class _LoginScreenState extends State<LoginScreen> {
   bool isLogin = true;
 
   static const String titulo = "Bem Vindo";
@@ -23,7 +21,7 @@ class _PaginaLoginState extends State<PaginaLogin> {
   loginGoogle() async {
     setState(() => loadingGoogle = true);
     try {
-      await usuarioController.loginGoogle();
+      await userController.loginGoogle();
     } on AuthException catch (e) {
       setState(() => loadingGoogle = false);
       ScaffoldMessenger.of(context)
@@ -34,7 +32,7 @@ class _PaginaLoginState extends State<PaginaLogin> {
   loginFacebook() async {
     setState(() => loadingFacebook = true);
     try {
-      await usuarioController.loginFacebook();
+      await userController.loginFacebook();
     } on AuthException catch (e) {
       setState(() => loadingFacebook = false);
       ScaffoldMessenger.of(context)

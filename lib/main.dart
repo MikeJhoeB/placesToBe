@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:places_to_be/pages/PaginaInicial.dart';
+import 'package:places_to_be/pages/LoadingScreen.dart';
 
 import 'constants/firebase.dart';
-import 'controllers/UsuarioController.dart';
+import 'controllers/UserController.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initialization.then((value) {
-    Get.put(UsuarioController());
+    Get.put(UserController());
   });
   runApp(const MyApp());
 }
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const PaginaInicial(),
+      home: const LoadingScreen(),
     );
   }
 }

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:places_to_be/pages/PaginaPrincipal/Widgets/MenuItem.dart';
 
 import '../../classes/Categorys.dart';
 import '../../classes/MapsFunctions.dart';
@@ -10,15 +9,16 @@ import '../../constants/controllers.dart';
 import '../../models/maps/Places.dart';
 import 'Widgets/Details.dart';
 import 'Widgets/LoadingUserLocation.dart';
+import 'Widgets/MenuItem.dart';
 
-class PaginaPrincipal extends StatefulWidget {
-  const PaginaPrincipal({Key? key}) : super(key: key);
+class MainScreen extends StatefulWidget {
+  const MainScreen({Key? key}) : super(key: key);
 
   @override
-  State<PaginaPrincipal> createState() => PaginaPrincipalState();
+  State<MainScreen> createState() => MainScreenState();
 }
 
-class PaginaPrincipalState extends State<PaginaPrincipal> {
+class MainScreenState extends State<MainScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final Completer<GoogleMapController> _controller =
@@ -154,7 +154,7 @@ class PaginaPrincipalState extends State<PaginaPrincipal> {
         IconButton(
             onPressed: () {
               setState(() {
-                usuarioController.logout();
+                userController.logout();
               });
             },
             icon: const Icon(Icons.logout)),

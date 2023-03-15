@@ -2,10 +2,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../models/maps/Distance.dart';
 import '../models/maps/Places.dart';
-import '../repositorys/maps/Distance.dart';
-import '../repositorys/maps/Places.dart';
+import '../repositorys/Distance.dart';
+import '../repositorys/Places.dart';
 
 class MapsFunctions {
+
   static Future<Distance?> getDistance(origem, destino) async {
     return await DistanceRepository()
         .getDirections(origem: origem, destino: destino);
