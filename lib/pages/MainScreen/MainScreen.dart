@@ -7,6 +7,7 @@ import '../../classes/Categorys.dart';
 import '../../classes/MapsFunctions.dart';
 import '../../constants/controllers.dart';
 import '../../models/maps/Places.dart';
+import 'Widgets/BuildTextSlider.dart';
 import 'Widgets/Details.dart';
 import 'Widgets/LoadingUserLocation.dart';
 import 'Widgets/MenuItem.dart';
@@ -31,8 +32,8 @@ class MainScreenState extends State<MainScreen> {
   double latUser = 0.0, lngUser = 0.0;
   late CameraPosition inicio;
 
-  static const double minValor = 0;
-  static const double maxValor = 4;
+  static const double minPrice = 0;
+  static const double maxPrice = 4;
 
   static const double minDistance = 0;
   static const double maxDistance = 50;
@@ -79,14 +80,6 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return buildTela(context);
-  }
-
-  Widget buildTela(BuildContext context) {
-    return buildWidgetPrincipal(context);
-  }
-
-  Widget buildWidgetPrincipal(BuildContext context) {
     return latUser == 0.0 || lngUser == 0.0
         ? const LoadingUserLocation()
         : buildApp();
@@ -209,20 +202,20 @@ class MainScreenState extends State<MainScreen> {
               child: ListView(
                 shrinkWrap: true,
                 children: <Widget>[
-                  buildFiltroDistancia(context),
-                  buildFiltroTipo(context),
-                  buildFiltroValor(),
+                  buildDistanceFilter(context),
+                  buildTypeFilter(context),
+                  buildPriceFilter(),
                 ],
               ),
             ),
-            buildBotoesSideMenu(context),
+            buildSideMenuButtons(context),
           ],
         ),
       ),
     );
   }
 
-  Column buildFiltroDistancia(BuildContext context) {
+  Column buildDistanceFilter(BuildContext context) {
     return Column(
       children: [
         MenuItem(
@@ -234,7 +227,7 @@ class MainScreenState extends State<MainScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const BuildTextSliderDistancia(value: minDistance),
+              BuildTextSlider(price: '${minDistance.round().toString()} km'),
               Expanded(
                 child: Slider(
                   key: const PageStorageKey<String>('valueDistance'),
@@ -253,7 +246,7 @@ class MainScreenState extends State<MainScreen> {
                   },
                 ),
               ),
-              const BuildTextSliderDistancia(value: maxDistance),
+              BuildTextSlider(price: '${maxDistance.round().toString()} km'),
             ],
           ),
         ),
@@ -261,7 +254,7 @@ class MainScreenState extends State<MainScreen> {
     );
   }
 
-  Column buildFiltroTipo(BuildContext context) {
+  Column buildTypeFilter(BuildContext context) {
     return Column(
       children: [
         MenuItem(
@@ -299,7 +292,7 @@ class MainScreenState extends State<MainScreen> {
     );
   }
 
-  Column buildFiltroValor() {
+  Column buildPriceFilter() {
     return Column(
       children: [
         MenuItem(
@@ -311,13 +304,13 @@ class MainScreenState extends State<MainScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const BuildTextSliderValor(value: minValor),
+              BuildTextSlider(price: minPrice.round().toString()),
               Expanded(
                 child: RangeSlider(
                   values:
                       RangeValues(currentMinValuePreco, currentMaxValuePreco),
-                  min: minValor,
-                  max: maxValor,
+                  min: minPrice,
+                  max: maxPrice,
                   inactiveColor: Colors.white,
                   activeColor: Colors.green,
                   divisions: 4,
@@ -331,7 +324,7 @@ class MainScreenState extends State<MainScreen> {
                   },
                 ),
               ),
-              const BuildTextSliderValor(value: maxValor),
+              BuildTextSlider(price: maxPrice.round().toString()),
             ],
           ),
         ),
@@ -339,7 +332,7 @@ class MainScreenState extends State<MainScreen> {
     );
   }
 
-  SizedBox buildBotoesSideMenu(BuildContext context) {
+  SizedBox buildSideMenuButtons(BuildContext context) {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.15,
       child: Row(
@@ -352,7 +345,7 @@ class MainScreenState extends State<MainScreen> {
               child: FittedBox(
                 child: FloatingActionButton.extended(
                   backgroundColor: Colors.white,
-                  onPressed: () => {limpaFiltros()},
+                  onPressed: () => {cleanFilters()},
                   label: const Text(
                     "Clean",
                     style: TextStyle(color: Colors.blueAccent),
@@ -399,7 +392,7 @@ class MainScreenState extends State<MainScreen> {
 
   Future<Places?>? locateRandomPlace() {
     return MapsFunctions.getUserCurrentLocation().then((value) async {
-      return MapsFunctions.getPlaces(
+      return MapsFunctions.getRandomPlace(
         origem: LatLng(value.latitude, value.longitude),
         radius: currentValueDistance.round().toInt() * 1000,
         type: placeTypes[indexTypeSelected],
@@ -447,7 +440,7 @@ class MainScreenState extends State<MainScreen> {
     });
   }
 
-  void limpaFiltros() {
+  void cleanFilters() {
     setState(() {
       currentValueDistance = 0;
       indexTypeSelected = 0;
@@ -455,47 +448,5 @@ class MainScreenState extends State<MainScreen> {
       currentMinValuePreco = 0;
       currentMaxValuePreco = 4;
     });
-  }
-}
-
-class BuildTextSliderValor extends StatelessWidget {
-  const BuildTextSliderValor({
-    super.key,
-    required this.value,
-  });
-
-  final double value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      value.round().toString(),
-      style: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    );
-  }
-}
-
-class BuildTextSliderDistancia extends StatelessWidget {
-  const BuildTextSliderDistancia({
-    super.key,
-    required this.value,
-  });
-
-  final double value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      '${value.round().toString()} km',
-      style: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    );
   }
 }

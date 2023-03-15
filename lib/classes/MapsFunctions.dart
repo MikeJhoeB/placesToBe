@@ -12,7 +12,7 @@ class MapsFunctions {
         .getDirections(origem: origem, destino: destino);
   }
 
-  static Future<Places?> getPlaces(
+  static Future<Places?> getRandomPlace(
       {required LatLng origem,
       required int radius,
       required String type,
