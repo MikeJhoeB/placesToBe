@@ -9,7 +9,7 @@ class PlacesRepository {
 
   final Dio _dio = Dio();
 
-  Future<Places?> getPlaces({
+  Future<Places?> getPlace({
     required LatLng origem,
     required int radius,
     required String type,

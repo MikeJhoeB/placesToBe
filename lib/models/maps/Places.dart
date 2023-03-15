@@ -23,7 +23,7 @@ class Places {
     LatLng location = LatLng(place['lat'], place['lng']);
     String placeId = map['place_id'];
     String name = map['name'];
-    int price = map['price_level'];
+    int price = map['price_level'] ?? 0;
     double rating = map['rating'];
 
     return Places(
@@ -36,11 +36,13 @@ class Places {
   }
 }
 
-Places getRandomPlace(Map<String, dynamic> map) {
+Places? getRandomPlace(Map<String, dynamic> map) {
   late List<Places> places = getAllPlaces(map);
-
-  final random = Random();
-  return places[random.nextInt(places.length)];
+  if(places.isNotEmpty) {
+    final random = Random();
+    return places[random.nextInt(places.length)];
+  }
+  return null;
 }
 
 List<Places> getAllPlaces(Map<String, dynamic> map) {

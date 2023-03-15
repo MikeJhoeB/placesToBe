@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../../../classes/Categorys.dart';
 
 class Details extends StatelessWidget {
@@ -10,6 +10,7 @@ class Details extends StatelessWidget {
     required this.indexTypeSelected,
     required this.placeName,
     required this.placePrice,
+    required this.placeRating,
   }) : _categories = categories;
 
   final double detailPosition;
@@ -17,6 +18,7 @@ class Details extends StatelessWidget {
   final int indexTypeSelected;
   final String placeName;
   final int placePrice;
+  final double placeRating;
 
   @override
   Widget build(BuildContext context) {
@@ -63,23 +65,35 @@ class Details extends StatelessWidget {
                             decoration: TextDecoration.none,
                           ),
                         ),
-                        Text(
-                          placePrice.toString(),
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            decoration: TextDecoration.none,
+                        RatingBar.builder(
+                          ignoreGestures: true,
+                          initialRating: placePrice.toDouble(),
+                          minRating: 1,
+                          itemSize: 24,
+                          direction: Axis.horizontal,
+                          allowHalfRating: true,
+                          itemCount: 4,
+                          itemPadding: const EdgeInsets.symmetric(horizontal: 4),
+                          itemBuilder: (context, _) => const Icon(
+                            Icons.attach_money_outlined,
+                            color: Colors.amber,
                           ),
+                          onRatingUpdate: (rating) {},
                         ),
-                        const Text(
-                          'Localização',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            decoration: TextDecoration.none,
+                        RatingBar.builder(
+                          ignoreGestures: true,
+                          initialRating: placeRating,
+                          minRating: 1,
+                          itemSize: 24,
+                          direction: Axis.horizontal,
+                          allowHalfRating: true,
+                          itemCount: 5,
+                          itemPadding: const EdgeInsets.symmetric(horizontal: 4),
+                          itemBuilder: (context, _) => const Icon(
+                            Icons.star,
+                            color: Colors.amber,
                           ),
+                          onRatingUpdate: (rating) {},
                         ),
                       ],
                     )

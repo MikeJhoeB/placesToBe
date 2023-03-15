@@ -38,9 +38,9 @@ class MainScreenState extends State<MainScreen> {
   static const double minDistance = 0;
   static const double maxDistance = 50;
 
-  double currentMinValuePreco = 0;
-  double currentMaxValuePreco = 4;
-  double currentValueDistance = 1;
+  double currentMinPrice = 0;
+  double currentMaxPrice = 4;
+  double currentDistance = 1;
 
   late final Places placeSorted;
 
@@ -52,6 +52,7 @@ class MainScreenState extends State<MainScreen> {
   double detailPosition = -220;
   String placeName = "Restaurante";
   int placePrice = 0;
+  double placeRating = 0;
 
   final List<Category> _categories = [
     Category('bar', Icons.local_drink),
@@ -102,6 +103,7 @@ class MainScreenState extends State<MainScreen> {
         indexTypeSelected: indexTypeSelected,
         placeName: placeName,
         placePrice: placePrice,
+        placeRating: placeRating,
       )
     ]);
   }
@@ -233,15 +235,15 @@ class MainScreenState extends State<MainScreen> {
                   key: const PageStorageKey<String>('valueDistance'),
                   min: minDistance,
                   max: maxDistance,
-                  value: currentValueDistance,
+                  value: currentDistance,
                   divisions: (maxDistance / 5).round().toInt(),
-                  label: currentValueDistance.round().toString(),
+                  label: currentDistance.round().toString(),
                   inactiveColor: Colors.white,
                   activeColor: Colors.green,
                   autofocus: true,
                   onChanged: (value) {
                     setState(() {
-                      currentValueDistance = value;
+                      currentDistance = value;
                     });
                   },
                 ),
@@ -308,18 +310,18 @@ class MainScreenState extends State<MainScreen> {
               Expanded(
                 child: RangeSlider(
                   values:
-                      RangeValues(currentMinValuePreco, currentMaxValuePreco),
+                      RangeValues(currentMinPrice, currentMaxPrice),
                   min: minPrice,
                   max: maxPrice,
                   inactiveColor: Colors.white,
                   activeColor: Colors.green,
                   divisions: 4,
                   labels: RangeLabels(
-                      '$currentMinValuePreco', '$currentMaxValuePreco'),
+                      '$currentMinPrice', '$currentMaxPrice'),
                   onChanged: (value) {
                     setState(() {
-                      currentMinValuePreco = value.start;
-                      currentMaxValuePreco = value.end;
+                      currentMinPrice = value.start;
+                      currentMaxPrice = value.end;
                     });
                   },
                 ),
@@ -394,11 +396,11 @@ class MainScreenState extends State<MainScreen> {
     return MapsFunctions.getUserCurrentLocation().then((value) async {
       return MapsFunctions.getRandomPlace(
         origem: LatLng(value.latitude, value.longitude),
-        radius: currentValueDistance.round().toInt() * 1000,
+        radius: currentDistance.round().toInt() * 1000,
         type: placeTypes[indexTypeSelected],
         keyword: null,
-        minprice: currentMinValuePreco.round().toInt(),
-        maxprice: currentMaxValuePreco.round().toInt(),
+        minprice: currentMinPrice.round().toInt(),
+        maxprice: currentMaxPrice.round().toInt(),
       ).then((value) {
         if (value != null) {
           return value;
@@ -432,6 +434,7 @@ class MainScreenState extends State<MainScreen> {
             detailPosition = 20;
             placeName = place.name;
             placePrice = place.price;
+            placeRating = place.rating;
           });
         });
 
@@ -442,11 +445,11 @@ class MainScreenState extends State<MainScreen> {
 
   void cleanFilters() {
     setState(() {
-      currentValueDistance = 0;
+      currentDistance = 0;
       indexTypeSelected = 0;
       selectedType = <bool>[true, false, false];
-      currentMinValuePreco = 0;
-      currentMaxValuePreco = 4;
+      currentMinPrice = 0;
+      currentMaxPrice = 4;
     });
   }
 }

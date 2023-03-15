@@ -19,7 +19,7 @@ class MapsFunctions {
       required String? keyword,
       required int? minprice,
       required int? maxprice}) async {
-    return await PlacesRepository().getPlaces(
+    return await PlacesRepository().getPlace(
       origem: origem,
       radius: radius,
       type: type,
